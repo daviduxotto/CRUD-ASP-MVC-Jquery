@@ -1,0 +1,82 @@
+﻿@model Entidades.eUsuario
+@{
+    ViewBag.Title = "listar";
+}
+
+<h3>Mantenimiento de Usuarios</h3>
+
+<div class="container-main">
+    <table id="tbUsuarios" class="table">
+        <thead>
+            <tr>
+                <th>@Html.DisplayNameFor(m => m.codUsuario)</th>
+                <th>@Html.DisplayNameFor(m => m.clave)</th>
+                <th>@Html.DisplayNameFor(m => m.nombre)</th>
+                <th>@Html.DisplayNameFor(m => m.apellidos)</th>
+                <th>@Html.DisplayNameFor(m => m.telefono)</th>
+                <th>@Html.DisplayNameFor(m => m.edad)</th>
+                <th></th>
+            </tr>
+        </thead>
+    </table>
+    <div id="dialogcontainer"></div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        // --- definicion de tabla
+        $('#tbUsuarios').DataTable({            
+             ajax: {
+                url: '@Url.Action("getAllUser")',
+                type: "get",
+                datatype: "json"
+            },
+            columns: [
+                { data: "codUsuario", width: 5 },
+                { data: "clave", width: 200 },
+                { data: "nombre", "autoWidth": true },
+                { data: "apellidos", "autoWidth": true },
+                { data: "telefono", "autoWidth": true },
+                { data: "edad", "autoWidth": true },
+                {
+                    data: "codUsuario", width: 10, "render": function (data, type, full) {
+                        return '<a class="popup" data-toggle="tooltip" data-placement="top" title="Editar"  href="/usuario/edit/' + full.codUsuario + '"> <span class="glyphicon glyphicon-pencil"></span></a>';
+                    }
+               }
+            ],
+            paging: false,
+            ordering: false,
+            language: {
+                "search": "Busqueda: ",
+                info: "",
+                infoFiltered: "",
+            }
+        });
+
+        // --- eventos ----
+        // --- capturo clic de los enlaces del contenedor principal
+        $('.container-main').on('click', 'a.popup', function (e) {
+            e.preventDefault();
+            OpenDialog($(this).attr('href'));
+        });
+        // --- abrir dialogo 
+        function OpenDialog(pageUrl) {
+            // cargo el contenido de la vista parcial
+            var $pageContent = $('#dialogcontainer');
+            $pageContent.load(pageUrl);
+            $("#dialogcontainer").dialog({
+                resizable: false,
+                height: "auto",
+                width: 600,
+                modal: true,
+                close: function () {
+                    $(this).hide();
+                }
+            });
+        
+
+        }
+    
+    });
+</script>
+
